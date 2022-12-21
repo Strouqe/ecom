@@ -1,6 +1,5 @@
 import Image from "next/legacy/image"
 import Link from "next/link"
-import React from "react"
 import { SearchIcon, ShoppingBagIcon, UserIcon } from "@heroicons/react/outline"
 
 
