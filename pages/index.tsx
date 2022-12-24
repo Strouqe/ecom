@@ -5,28 +5,23 @@ import Landing from '../components/Landing'
 import { Tab } from '@headlessui/react'
 import { fetchCategories } from '../utils/fetchCategories'
 import { fetchProducts } from "../utils/fetchProducts"
-import useSWR from 'swr'
 import Product from "../components/Product"
 import Basket from "../components/Basket"
+import { getSession } from "next-auth/react"
+import type { Session } from "next-auth"
 
 interface Props {
-  categories: Category[],
+  categories: Category[]
+  products: Product[]
+  session: Session | null
   
 }
 
-const Home = () => {
-  // const categories = fetchCategories()
-  // const products = fetchProducts()
-  const fetcher = (url:string) => fetch(url).then(data => data.json())
+const Home = ({ categories, products }: Props) => {
 
-  const fetchCategories = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/getCategories`, fetcher)
-  console.log("Home Categories" ,fetchCategories.data?.categories)
-  let categories : Category [] = fetchCategories.data?.categories
+  console.log("Home Categories" ,categories)
 
-  const fetchProducts = useSWR(`${process.env.NEXT_PUBLIC_BASE_URL}/api/getProducts`, fetcher)
-
-  let products : Product [] = fetchProducts.data?.products
-  console.log("Home Products1" , fetchProducts.data?.products)
+  console.log("Home Products1" , products)
   const showProducts = (category: number) => {
     return products?.filter((product) => product.category._ref === categories[category]._id).map((product) => (
       <Product product={product} key={product._id}/>
@@ -81,19 +76,20 @@ const Home = () => {
 
 export default Home
 
-export const getServersideProps = async () => {
-  // const categories = await fetchCategories()
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/getCategories`)
 
-  const data = await res.json()
-  const categories: Category[] = data.categories
-  const products = await fetchProducts()
-  console.log("getServersideprops" ,categories);
+export const getServerSideProps: GetServerSideProps<Props> = async (
+  context
+) => {
+  const categories = await fetchCategories();
+  const products = await fetchProducts();
+  const session = await getSession(context);
+
 
   return {
     props: {
       categories,
-      products
+      products,
+      session,
     },
-  }
-}
+  };
+};
