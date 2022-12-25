@@ -1,3 +1,5 @@
+Deployed: https://ecom-idbj.vercel.app/
+
 Next + Tailwind + TypeScript + SanityV2 + Redux + NextAuth + Stripe
 
 
